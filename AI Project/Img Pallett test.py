@@ -6,13 +6,13 @@ import numpy as np
 import colour
   
 # Opening the primary image (used in background) 
-img1 = Image.open(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\DistantMountains.jpg") 
+img1 = Image.open(r"C:\AI Project\DistantMountains.jpg") 
 
 #crop the background image to the area behind the rat
 img1crop = img1.crop((0, 1000, 164, 1062))
   
 # Opening the secondary image (overlay image) 
-img2 = Image.open(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\Rat.png") 
+img2 = Image.open(r"C:\AI Project\Rat.png") 
 
 def getPalette():
     reduced = img1.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
@@ -33,7 +33,7 @@ def colorRat(color_count):
             current_color = img2.getpixel( (x,y) )
             if current_color != (0, 0, 0, 0):
                     new_color = color_count[random.randint(0, len(color_count)-1)][1]
-                    img2.putpixel( (x,y), (new_color[0], new_color[1], new_color[2]))
+                    img2.putpixel( (x,y), (255, 255, 255))
 
 # def calcFitness():
 #     #save the crop and recolored rat
@@ -61,7 +61,7 @@ def pasteImg():
     img1.paste(img2, (0,1000), mask = img2) 
 
 def showImg():
-    img1.save(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\img1.jpg")
+    img1.save(r"C:\AI Project\img1.jpg")
     img1.show()
 
 colorRat(getPalette())
