@@ -8,8 +8,13 @@ t_upper = 150  # Upper threshold
   
 # Applying the Canny Edge filter 
 edge = cv2.Canny(img, t_lower, t_upper) 
+cv2.namedWindow('original', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('original', 400, 543)
 
 cv2.imshow('original', img) 
+
+cv2.namedWindow('edge', cv2.WINDOW_NORMAL)
+cv2.resizeWindow('edge', 400, 543)
 
 cv2.imshow('edge', edge) 
 cv2.resizeWindow('edge', (400,543))
