@@ -6,13 +6,13 @@ import numpy as np
 import colour
   
 # Opening the primary image (used in background) 
-img1 = Image.open(r"C:\AI Project\DistantMountains.jpg") 
+img1 = Image.open(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\DistantMountains.jpg") 
 
 #crop the background image to the area behind the rat
 img1crop = img1.crop((0, 1000, 164, 1062))
   
 # Opening the secondary image (overlay image) 
-img2 = Image.open(r"C:\AI Project\Rat.png") 
+img2 = Image.open(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\Rat.png") 
 
 def getPalette():
     reduced = img1.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
@@ -37,11 +37,11 @@ def colorRat(color_count):
 
 def calcFitness():
     #save the crop and recolored rat
-    img1crop.save("C:\AI Project\Temp\crop.jpg")
-    img2.save("C:\AI Project\Temp\coloredRat.png")
+    img1crop.save(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\Temp\crop.jpg")
+    img2.save(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\Temp\coloredRat.png")
     #open them in cv2 (might change this down the line if it takes to long)
-    image1_rgb = cv2.imread("C:\AI Project\Temp\crop.jpg")
-    image2_rgb = cv2.imread("C:\AI Project\Temp\coloredRat.png")
+    image1_rgb = cv2.imread(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\Temp\crop.jpg")
+    image2_rgb = cv2.imread(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\Temp\coloredRat.png")
     #convert the RGB values to lab
     image1_lab = cv2.cvtColor(image1_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
     image2_lab = cv2.cvtColor(image2_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
