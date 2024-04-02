@@ -1,6 +1,6 @@
 import cv2 
   
-img = cv2.imread(r"C:\Users\jessb\Documents\AI_Rat_Project\AI Project\img1.jpg")  # Read image 
+img = cv2.imread(r"C:\Users\rude3\Documents\GitHub\AI_Rat_Project\AI Project\img1.jpg")  # Read image 
 cv2.resize(img, (400, 543))
 # Setting parameter values 
 t_lower = 50  # Lower Threshold 
