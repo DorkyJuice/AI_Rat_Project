@@ -11,6 +11,8 @@ imgBack = Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\A
 #crop the background image to the area behind the rat
 imgBackcrop = imgBack.crop((0, 1000, 164, 1062))
 rat = []
+fitnessArray = []
+
 for x in 20:
     # Opening the secondary image (overlay image) 
     rat[x] = [Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Rat.png")]
@@ -34,13 +36,14 @@ def colorRat(color_count, img):
     # Get the size of the image
     width = int(img.width)
     height = int(img.height)
+    new_color = color_count[random.randint(0, len(color_count)-1)][1]
 
     #Process every pixel
     for x in range(width):
         for y in range(height):
             current_color = img.getpixel( (x,y) )
             if current_color != (0, 0, 0, 0):
-                    new_color = color_count[random.randint(0, len(color_count)-1)][1]
+                    
                     img.putpixel( (x,y), (new_color[0], new_color[1], new_color[2]))
 
 def calcFitness(img):
@@ -95,5 +98,9 @@ colors = getPalette()
 while True:
     for x in 20:
         colorRat(colors, rat[x])
-        calcFitness(rat[x])
+       ## fitness.sort
+        fitness[x] = calcFitness(rat[x])
+        
+    for x in 10:
+        crossover(fitness[x], fitness[x+1])
     getRat()
