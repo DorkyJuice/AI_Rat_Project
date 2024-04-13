@@ -12,24 +12,22 @@ imgBack = Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\A
 imgBackcrop = imgBack.crop((0, 1000, 164, 1062))
 rat = []
 fitnessArray = []
+fittestRats = []
+population = 20
+mostFit = population // 2
 
-for x in 20:
+for x in range(population):
     # Opening the secondary image (overlay image) 
-    rat[x] = [Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Rat.png")]
+    rat.append(Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Rat.png"))
 
 fitness = 0
 
-def getRat():
-    for x in 20:
-        rat[x] = Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Temp\coloredRat" + x + ".png")
-
-def getPalette():
-    reduced = imgBack.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
+def getPalette(img):
+    reduced = img.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
     palette = reduced.getpalette() # get palette as [r,g,b,r,g,b,...]
     palette = [palette[3*n:3*n+3] for n in range(256)] # group 3 by 3 = [[r,g,b],[r,g,b],...]
     color_count = [(n, palette[m]) for n,m in reduced.getcolors()]
     color_count.sort(reverse=True) #sort color frequency in descending order
-    print(color_count)
     return color_count
 
 def colorRat(color_count, img):
@@ -67,6 +65,20 @@ def calcFitness(img):
      print(fitness)
      return fitness
 
+def getMostFit():
+    #find most fit out of population
+    tempBest = fitnessArray[0]
+    tempBestIndex = 0
+    for x in range(mostFit):
+        for y in range(fitnessArray.len()):
+            if(tempBest < fitnessArray[y]):
+                tempBest = fitnessArray[y]
+                tempBestIndex = y
+        fittestRats.append(rat[tempBestIndex])
+        rat.pop[tempBestIndex]
+        fitnessArray.pop[tempBestIndex]
+        
+
 def mutate():
     #mutate the color of the rat
     return
@@ -93,14 +105,16 @@ def showImg():
     imgBack.show()
     quit()
 
-colors = getPalette()
+colors = getPalette(imgBack)
 
 while True:
-    for x in 20:
+    for x in range(population):
         colorRat(colors, rat[x])
        ## fitness.sort
-        fitness[x] = calcFitness(rat[x])
+        fitness.append(calcFitness(rat[x]))
+    getMostFit()    
+    print(fittestRats)
+    break
         
-    for x in 10:
-        crossover(fitness[x], fitness[x+1])
-    getRat()
+    #for x in range(mostFit):
+     #   crossover(fitness[x], fitness[x+1])
