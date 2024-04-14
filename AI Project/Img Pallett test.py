@@ -6,7 +6,7 @@ import numpy as np
 import colour
   
 # Opening the primary image (used in background) 
-imgBack = Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\DistantMountains.jpg") 
+imgBack = Image.open(r"AI Project\DistantMountains.jpg") 
 
 #crop the background image to the area behind the rat
 imgBackcrop = imgBack.crop((0, 1000, 164, 1062))
@@ -18,10 +18,10 @@ mostFit = population // 2
 
 for x in range(population):
     # Opening the secondary image (overlay image) 
-    rat.append(Image.open(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Rat.png"))
+    rat.append(Image.open(r"AI Project/Rat.png"))
 
 fitness = 0
-
+#gets pallet of background image
 def getPalette(img):
     reduced = img.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
     palette = reduced.getpalette() # get palette as [r,g,b,r,g,b,...]
@@ -29,7 +29,7 @@ def getPalette(img):
     color_count = [(n, palette[m]) for n,m in reduced.getcolors()]
     color_count.sort(reverse=True) #sort color frequency in descending order
     return color_count
-
+#replaces the color of the rat with the colors of the background randomly at generation 1
 def colorRat(color_count, img):
     # Get the size of the image
     width = int(img.width)
@@ -43,14 +43,14 @@ def colorRat(color_count, img):
             if current_color != (0, 0, 0, 0):
                     
                     img.putpixel( (x,y), (new_color[0], new_color[1], new_color[2]))
-
+#finds the difference in color between the rat and the background and uses that as the fitness value
 def calcFitness(img):
 #     #save the crop and recolored rat
-     imgBackcrop.save(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Temp\crop.jpg")
-     img.save(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Temp\coloredRat.png")
+     imgBackcrop.save(r"AI Project\Temp\crop.jpg")
+     img.save(r"AI Project\Temp\coloredRat.png")
 #     #open them in cv2 (might change this down the line if it takes to long)
-     image1_rgb = cv2.imread(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Temp\crop.jpg")
-     image2_rgb = cv2.imread(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\Temp\coloredRat.png")
+     image1_rgb = cv2.imread(r"AI Project\Temp\crop.jpg")
+     image2_rgb = cv2.imread(r"AI Project\Temp\coloredRat.png")
 #     #convert the RGB values to lab
      image1_lab = cv2.cvtColor(image1_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
      image2_lab = cv2.cvtColor(image2_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
@@ -64,19 +64,19 @@ def calcFitness(img):
 
      print(fitness)
      return fitness
-
+#finds the most fit rat in the population
 def getMostFit():
-    #find most fit out of population
     tempBest = fitnessArray[0]
     tempBestIndex = 0
     for x in range(mostFit):
-        for y in range(fitnessArray.len()):
-            if(tempBest < fitnessArray[y]):
+        for y in range(len(fitnessArray)):
+            if(tempBest > fitnessArray[y]):
                 tempBest = fitnessArray[y]
                 tempBestIndex = y
         fittestRats.append(rat[tempBestIndex])
-        rat.pop[tempBestIndex]
-        fitnessArray.pop[tempBestIndex]
+        rat.pop(tempBestIndex)
+        fitnessArray.pop(tempBestIndex)
+        tempBest = fitnessArray[0]
         
 
 def mutate():
@@ -99,9 +99,9 @@ def pasteImg(img):
     # Pasting img image on top of imgBack  
     # starting at coordinates (0, 0) 
     imgBack.paste(img, (0,1000), mask = img) 
-
+#shows the best rat and saves it
 def showImg():
-    imgBack.save(r"C:\Users\casey\OneDrive\Documents\GitHub\AI_Rat_Project\AI Project\imgBack.jpg")
+    imgBack.save(r"AI Project\bestRat.jpg")
     imgBack.show()
     quit()
 
@@ -111,9 +111,8 @@ while True:
     for x in range(population):
         colorRat(colors, rat[x])
        ## fitness.sort
-        fitness.append(calcFitness(rat[x]))
+        fitnessArray.append(calcFitness(rat[x]))
     getMostFit()    
-    print(fittestRats)
     break
         
     #for x in range(mostFit):
