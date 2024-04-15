@@ -72,6 +72,7 @@ def calcFitness(img):
 
      print(fitness)
      return fitness
+ 
 #finds the most fit rat in the population
 def getMostFit():
     fittestRats.clear()
@@ -82,7 +83,7 @@ def getMostFit():
             if(tempBest > fitnessArray[y]):
                 tempBest = fitnessArray[y]
                 tempBestIndex = y
-                print(tempBestIndex)
+            
         fittestRats.append(rat[tempBestIndex])
         rat.pop(tempBestIndex)
         fitnessArray.pop(tempBestIndex)
@@ -92,7 +93,8 @@ def getMostFit():
 
 def mutate():
     #mutate the color of the rat
-    return
+    
+    return random.randint(0,255)
 
 def crossover():
     #crossover the color of the rat
@@ -101,6 +103,8 @@ def crossover():
         rat2 = getPalette(fittestRats[x + 5])
         
         for i in range(2):
+            mutateChance = random.randint(1,100)
+            geneToMutate = random.randint(1,99)
             
             color = []   
             ran = random.randint(1,99)
@@ -113,11 +117,21 @@ def crossover():
                 color.append(rat1[1][1][1])
                 color.append(rat2[1][1][0])
                 color.append(rat2[1][1][2])
+
             else:
                 color.append(rat1[1][1][2])
                 color.append(rat2[1][1][0])
-                color.append(rat2[1][1][1])
-              
+                color.append(rat2[1][1][1])          
+                           
+            if mutateChance <= 5:
+                    if geneToMutate <= 33:
+                        color[0] = mutate()
+                        
+                    elif geneToMutate > 33 and geneToMutate <= 66:
+                        color[1] = mutate()
+                    else:
+                        color[2] = mutate() 
+                        
             rat.append(Image.open(r"AI Project/Rat.png"))      
             colorRat(color, rat[x + 10 + i])
     
