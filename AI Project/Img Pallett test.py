@@ -141,10 +141,10 @@ def crossover():
     
     return
 
-def select():
+def select(fitness, rat):
     #select the best color for the rat
-    if(fitness < 0.1):
-        pasteImg()
+    if(fitness < 0.3):
+        pasteImg(rat)
         showImg()
     return
 
@@ -164,10 +164,14 @@ colors = getPalette(imgBack)
 for i in range(population):  
         colorRat(newColor(colors), rat[i])
 #start the genetic algorithm
-for x in range(2):
+
+while True:
     print("Generation: #" + str(x))
     for i in range(population):  
         fitnessArray.append(calcFitness(rat[i]))
     getMostFit() 
     fitnessArray.clear()
-    crossover()   
+    crossover() 
+    highestFitness = fittestRatsFitness[0]
+    select(highestFitness, fittestRats[0])  
+    
