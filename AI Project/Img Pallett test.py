@@ -36,19 +36,9 @@ def newColor(color_count):
     return new_color
 
 #replaces the color of the rat with the colors of the background randomly at generation 1
-def colorRat(new_color, img):
-    # Get the size of the image
-    width = int(img.width)
-    height = int(img.height)
-
-
-    #Process every pixel
-    for x in range(width):
-        for y in range(height):
-            current_color = img.getpixel( (x,y) )
-            if current_color != (0, 0, 0, 0):
-
-                    img.putpixel( (x,y), (new_color[0], new_color[1], new_color[2]))
+def colorRat(new_color, img, x, y):
+    
+    img.putpixel( (x,y), (new_color[0], new_color[1], new_color[2]))
 
 
 #finds the difference in color between the rat and the background and uses that as the fitness value  
@@ -101,43 +91,54 @@ def mutate():
 
 def crossover():
     #crossover the color of the rat
-    for x in range(len(fittestRats)-5):   
-        rat1 = getPalette(fittestRats[x])
-        rat2 = getPalette(fittestRats[x + 5])
-        
-        for i in range(2):
-            mutateChance = random.randint(1,100)
-            geneToMutate = random.randint(1,99)
+    for i in range(len(fittestRats)-5):   
+        rat1 = getPalette(fittestRats[i])
+        rat2 = getPalette(fittestRats[i + 5])
+     
+     
+        for j in range(2):
+            rat.append(Image.open(r"AI Project/Rat.png"))
             
-            color = []   
-            ran = random.randint(1,99)
-            if ran <= 33:
-                color.append(rat1[1][1][0])
-                color.append(rat2[1][1][1])
-                color.append(rat2[1][1][2])
+            # Get the size of the image
+            width = int(rat[i].width)
+            height = int(rat[i].height)
+            #Process every pixel
+            for x in range(width):
+                for y in range(height):
+                    current_color = rat[i].getpixel( (x,y) )
+                    if current_color != (0, 0, 0, 0):
+                        mutateChance = random.randint(1,100)
+                        geneToMutate = random.randint(1,99)
                 
-            elif ran > 33 and ran <= 66:
-                color.append(rat1[1][1][1])
-                color.append(rat2[1][1][0])
-                color.append(rat2[1][1][2])
+                        color = []   
+                        ran = random.randint(1,99)
+                        if ran <= 33:
+                            color.append(rat1[1][1][0])
+                            color.append(rat2[1][1][1])
+                            color.append(rat2[1][1][2])
+                            
+                        elif ran > 33 and ran <= 66:
+                            color.append(rat1[1][1][1])
+                            color.append(rat2[1][1][0])
+                            color.append(rat2[1][1][2])
 
-            else:
-                color.append(rat1[1][1][2])
-                color.append(rat2[1][1][0])
-                color.append(rat2[1][1][1])          
-                           
-            if mutateChance <= 5:
-                    if geneToMutate <= 33:
-                        color[0] = mutate()
-                        
-                    elif geneToMutate > 33 and geneToMutate <= 66:
-                        color[1] = mutate()
-                    else:
-                        color[2] = mutate() 
-                        
-            rat.append(Image.open(r"AI Project/Rat.png"))      
-            colorRat(color, rat[x + 10 + i])
-    
+                        else:
+                            color.append(rat1[1][1][2])
+                            color.append(rat2[1][1][0])
+                            color.append(rat2[1][1][1])          
+                                    
+                        if mutateChance <= 5:
+                                if geneToMutate <= 33:
+                                    color[0] = mutate()
+                                    
+                                elif geneToMutate > 33 and geneToMutate <= 66:
+                                    color[1] = mutate()
+                                else:
+                                    color[2] = mutate() 
+                                    
+                              
+                        colorRat(color, rat[i + 10 + j], x, y)
+    print(rat1)
     
     return
 
@@ -162,9 +163,17 @@ def showImg():
 colors = getPalette(imgBack)
 #initialize the 1st generation of rats
 for i in range(population):  
-        colorRat(newColor(colors), rat[i])
-#start the genetic algorithm
+        # Get the size of the image
+    width = int(rat[i].width)
+    height = int(rat[i].height)
+    #Process every pixel
+    for x in range(width):
+        for y in range(height):
+            current_color = rat[i].getpixel( (x,y) )
+            if current_color != (0, 0, 0, 0):
+                colorRat(newColor(colors), rat[i], x, y)
 
+#start the genetic algorithm
 while True:
     print("Generation: #" + str(x))
     for i in range(population):  
