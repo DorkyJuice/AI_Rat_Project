@@ -13,6 +13,7 @@ imgBackcrop = imgBack.crop((0, 1000, 164, 1062))
 rat = []
 fitnessArray = []
 fittestRats = []
+fittestRatsFitness = []
 population = 20
 mostFit = population // 2
 
@@ -20,7 +21,7 @@ for x in range(population):
     # Opening the secondary image (overlay image) 
     rat.append(Image.open(r"AI Project/Rat.png"))
 
-fitness = 0
+highestFitness = 0
 #gets pallet of background image
 def getPalette(img):
     reduced = img.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
@@ -76,6 +77,7 @@ def calcFitness(img):
 #finds the most fit rat in the population
 def getMostFit():
     fittestRats.clear()
+    fittestRatsFitness.clear()
     tempBest = fitnessArray[0]
     tempBestIndex = 0
     for x in range(mostFit):
@@ -85,6 +87,7 @@ def getMostFit():
                 tempBestIndex = y
             
         fittestRats.append(rat[tempBestIndex])
+        fittestRatsFitness.append(fitnessArray[tempBestIndex])
         rat.pop(tempBestIndex)
         fitnessArray.pop(tempBestIndex)
         tempBest = fitnessArray[0]
@@ -93,7 +96,7 @@ def getMostFit():
 
 def mutate():
     #mutate the color of the rat
-    
+    print("mutate")
     return random.randint(0,255)
 
 def crossover():
@@ -155,18 +158,16 @@ def showImg():
     imgBack.save(r"AI Project\bestRat.jpg")
     imgBack.show()
     quit()
-
+#get colors of background image
 colors = getPalette(imgBack)
-
-for x in range(2):
-    print(len(rat))
-    for i in range(population):  
+#initialize the 1st generation of rats
+for i in range(population):  
         colorRat(newColor(colors), rat[i])
+#start the genetic algorithm
+for x in range(2):
+    print("Generation: #" + str(x))
+    for i in range(population):  
         fitnessArray.append(calcFitness(rat[i]))
     getMostFit() 
-    
     fitnessArray.clear()
     crossover()   
-        
-    #for x in range(mostFit):
-     #   crossover(fitness[x], fitness[x+1])
