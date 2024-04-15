@@ -4,6 +4,8 @@ import random
 import cv2
 import numpy as np
 import colour
+import pandas as pd
+import csv
   
 # Opening the primary image (used in background) 
 imgBack = Image.open(r"AI Project\DistantMountains.jpg") 
@@ -62,6 +64,7 @@ def calcFitness(img):
      fitness = mean / 100
 
      print(fitness)
+     
      return fitness
  
 #finds the most fit rat in the population
@@ -86,7 +89,6 @@ def getMostFit():
 
 def mutate():
     #mutate the color of the rat
-    print("mutate")
     return random.randint(0,255)
 
 def crossover():
@@ -100,12 +102,12 @@ def crossover():
             rat.append(Image.open(r"AI Project/Rat.png"))
             
             # Get the size of the image
-            width = int(rat[i].width)
-            height = int(rat[i].height)
+            width = int(rat[j].width)
+            height = int(rat[j].height)
             #Process every pixel
             for x in range(width):
                 for y in range(height):
-                    current_color = rat[i].getpixel( (x,y) )
+                    current_color = rat[j].getpixel( (x,y) )
                     if current_color != (0, 0, 0, 0):
                         mutateChance = random.randint(1,100)
                         geneToMutate = random.randint(1,99)
@@ -138,13 +140,12 @@ def crossover():
                                     
                               
                         colorRat(color, rat[i + 10 + j], x, y)
-    print(rat1)
     
     return
 
 def select(fitness, rat):
     #select the best color for the rat
-    if(fitness < 0.3):
+    if(fitness < 0.1):
         pasteImg(rat)
         showImg()
     return
@@ -178,9 +179,20 @@ while True:
     print("Generation: #" + str(x))
     for i in range(population):  
         fitnessArray.append(calcFitness(rat[i]))
+    
+    data = { 
+            'Generation #' + str(x), fitnessArray[0]
+            }   
+    df = pd.DataFrame(data)
+    df.to_csv('GFG.csv', mode='a', index=False, header=False)
+    
     getMostFit() 
+  
     fitnessArray.clear()
     crossover() 
     highestFitness = fittestRatsFitness[0]
     select(highestFitness, fittestRats[0])  
+    
+    
+            
     
