@@ -135,6 +135,7 @@ def pasteImg(img):
     # Pasting img image on top of imgBack  
     # starting at coordinates (0, 0) 
     imgBack.paste(img, (0,1000), mask = img) 
+    
 #shows the best rat and saves it
 def showImg():
     imgBack.save(r"AI Project\bestRat.jpg")
@@ -149,6 +150,7 @@ for x in range(2):
         colorRat(newColor(colors), rat[i])
         fitnessArray.append(calcFitness(rat[i]))
     getMostFit() 
+    
     fitnessArray.clear()
     crossover()   
         
