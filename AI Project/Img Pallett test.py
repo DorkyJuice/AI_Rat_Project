@@ -29,22 +29,30 @@ def getPalette(img):
     color_count = [(n, palette[m]) for n,m in reduced.getcolors()]
     color_count.sort(reverse=True) #sort color frequency in descending order
     return color_count
+
+def newColor(color_count):
+    new_color = color_count[random.randint(0, len(color_count)-1)][1]
+    return new_color
+
 #replaces the color of the rat with the colors of the background randomly at generation 1
-def colorRat(color_count, img):
+def colorRat(new_color, img):
     # Get the size of the image
     width = int(img.width)
     height = int(img.height)
-    new_color = color_count[random.randint(0, len(color_count)-1)][1]
+
 
     #Process every pixel
     for x in range(width):
         for y in range(height):
             current_color = img.getpixel( (x,y) )
             if current_color != (0, 0, 0, 0):
-                    
+
                     img.putpixel( (x,y), (new_color[0], new_color[1], new_color[2]))
-#finds the difference in color between the rat and the background and uses that as the fitness value
+
+
+#finds the difference in color between the rat and the background and uses that as the fitness value  
 def calcFitness(img):
+     
 #     #save the crop and recolored rat
      imgBackcrop.save(r"AI Project\Temp\crop.jpg")
      img.save(r"AI Project\Temp\coloredRat.png")
@@ -66,6 +74,7 @@ def calcFitness(img):
      return fitness
 #finds the most fit rat in the population
 def getMostFit():
+    fittestRats.clear()
     tempBest = fitnessArray[0]
     tempBestIndex = 0
     for x in range(mostFit):
@@ -73,10 +82,12 @@ def getMostFit():
             if(tempBest > fitnessArray[y]):
                 tempBest = fitnessArray[y]
                 tempBestIndex = y
+                print(tempBestIndex)
         fittestRats.append(rat[tempBestIndex])
         rat.pop(tempBestIndex)
         fitnessArray.pop(tempBestIndex)
         tempBest = fitnessArray[0]
+        tempBestIndex = 0
         
 
 def mutate():
@@ -85,6 +96,31 @@ def mutate():
 
 def crossover():
     #crossover the color of the rat
+    for x in range(len(fittestRats)-5):   
+        rat1 = getPalette(fittestRats[x])
+        rat2 = getPalette(fittestRats[x + 5])
+        
+        for i in range(2):
+            
+            color = []   
+            ran = random.randint(1,99)
+            if ran <= 33:
+                color.append(rat1[1][1][0])
+                color.append(rat2[1][1][1])
+                color.append(rat2[1][1][2])
+                
+            elif ran > 33 and ran <= 66:
+                color.append(rat1[1][1][1])
+                color.append(rat2[1][1][0])
+                color.append(rat2[1][1][2])
+            else:
+                color.append(rat1[1][1][2])
+                color.append(rat2[1][1][0])
+                color.append(rat2[1][1][1])
+              
+            rat.append(Image.open(r"AI Project/Rat.png"))      
+            colorRat(color, rat[x + 10 + i])
+    
     
     return
 
@@ -107,13 +143,14 @@ def showImg():
 
 colors = getPalette(imgBack)
 
-while True:
-    for x in range(population):
-        colorRat(colors, rat[x])
-       ## fitness.sort
-        fitnessArray.append(calcFitness(rat[x]))
-    getMostFit()    
-    break
+for x in range(2):
+    print(len(rat))
+    for i in range(population):  
+        colorRat(newColor(colors), rat[i])
+        fitnessArray.append(calcFitness(rat[i]))
+    getMostFit() 
+    fitnessArray.clear()
+    crossover()   
         
     #for x in range(mostFit):
      #   crossover(fitness[x], fitness[x+1])
