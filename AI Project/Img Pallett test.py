@@ -16,7 +16,7 @@ rat = []
 fitnessArray = []
 fittestRats = []
 fittestRatsFitness = []
-population = 20
+population = 100
 mostFit = population // 2
 
 for x in range(population):
@@ -129,7 +129,7 @@ def crossover():
                             color.append(rat2[1][1][0])
                             color.append(rat2[1][1][1])          
                                     
-                        if mutateChance <= 5:
+                        if mutateChance <= 20:
                                 if geneToMutate <= 33:
                                     color[0] = mutate()
                                     
@@ -175,13 +175,15 @@ for i in range(population):
                 colorRat(newColor(colors), rat[i], x, y)
 
 #start the genetic algorithm
+x = 0
 while True:
+    
     print("Generation: #" + str(x))
     for i in range(population):  
         fitnessArray.append(calcFitness(rat[i]))
     
     data = { 
-            'Generation #' + str(x), fitnessArray[0]
+            'Generation #' + str(x), fitnessArray[0], fitnessArray[1], fitnessArray[2], fitnessArray[3], fitnessArray[4], fitnessArray[5], fitnessArray[6]
             }   
     df = pd.DataFrame(data)
     df.to_csv('GFG.csv', mode='a', index=False, header=False)
@@ -192,6 +194,7 @@ while True:
     crossover() 
     highestFitness = fittestRatsFitness[0]
     select(highestFitness, fittestRats[0])  
+    x += 1
     
     
             
