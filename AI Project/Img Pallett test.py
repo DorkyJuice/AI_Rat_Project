@@ -128,7 +128,7 @@ def crossover():
                             color.append(rat2[1][1][0])
                             color.append(rat2[1][1][1])          
                                     
-                        if mutateChance <= 20:
+                        if mutateChance <= 30:
                                 if geneToMutate <= 33:
                                     color[0] = mutate()
                                     
@@ -144,7 +144,7 @@ def crossover():
 
 def select(fitness, rat):
     #select the best color for the rat
-    if(fitness < 0.1):
+    if(fitness < 0.5):
         pasteImg(rat)
         showImg()
     return
