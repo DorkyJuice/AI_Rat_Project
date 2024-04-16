@@ -12,6 +12,7 @@ imgBack = Image.open(r"AI Project\DistantMountains.jpg")
 #crop the background image to the area behind the rat
 imgBackcrop = imgBack.crop((0, 1000, 164, 1062))
 rat = []
+childRats = []
 fitnessArray = []
 fittestRats = []
 fittestRatsFitness = []
@@ -22,7 +23,8 @@ for x in range(population):
     # Opening the secondary image (overlay image) 
     rat.append(Image.open(r"AI Project/Rat.png"))
 
-highestFitness = 0
+highestFitness = 1
+fittestRat = Image.open(r"AI Project/Rat.png")
 #gets pallet of background image
 def getPalette(img):
     reduced = img.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
@@ -62,7 +64,7 @@ def calcFitness(img):
      #fitness = 100 * (mean**2 - mean)**2 + (1 - mean)**2
      fitness = mean / 100
 
-     print(fitness)
+     #print(fitness)
      
      return fitness
  
@@ -70,19 +72,25 @@ def calcFitness(img):
 def getMostFit():
     fittestRats.clear()
     fittestRatsFitness.clear()
-    tempBest = fitnessArray[0]
+    tempRats = []
+    tempFitness = []
+    for i in range(len(rat)):
+        tempRats.append(rat[i])
+    for i in range(len(fitnessArray)):
+        tempFitness.append(fitnessArray[i])
+    tempBest = tempFitness[0]
     tempBestIndex = 0
     for x in range(mostFit):
-        for y in range(len(fitnessArray)):
-            if(tempBest > fitnessArray[y]):
-                tempBest = fitnessArray[y]
+        for y in range(len(tempFitness)):
+            if(tempBest > tempFitness[y]):
+                tempBest = tempFitness[y]
                 tempBestIndex = y
             
         fittestRats.append(rat[tempBestIndex])
-        fittestRatsFitness.append(fitnessArray[tempBestIndex])
-        rat.pop(tempBestIndex)
-        fitnessArray.pop(tempBestIndex)
-        tempBest = fitnessArray[0]
+        fittestRatsFitness.append(tempFitness[tempBestIndex])
+        tempRats.pop(tempBestIndex)
+        tempFitness.pop(tempBestIndex)
+        tempBest = tempFitness[0]
         tempBestIndex = 0
         
 
@@ -92,41 +100,43 @@ def mutate():
 
 def crossover():
     #crossover the color of the rat
-    for i in range(len(fittestRats)-5):   
-        rat1 = getPalette(fittestRats[i])
-        rat2 = getPalette(fittestRats[i + 5])
-     
-     
-        for j in range(2):
-            rat.append(Image.open(r"AI Project/Rat.png"))
+    for j in range(2):
+        for i in range(len(fittestRats) - len(fittestRats) // 2):   
+            rat1 = getPalette(fittestRats[i])
+            rat2 = getPalette(fittestRats[i + len(fittestRats) // 2])
+        
+            childRats.append(Image.open(r"AI Project/Rat.png"))
             
             # Get the size of the image
-            width = int(rat[j].width)
-            height = int(rat[j].height)
+            width = int(childRats[i].width)
+            height = int(childRats[i].height)
             #Process every pixel
             for x in range(width):
                 for y in range(height):
-                    current_color = rat[j].getpixel( (x,y) )
+                    current_color = rat[i].getpixel( (x,y) )
                     if current_color != (0, 0, 0, 0):
                         mutateChance = random.randint(1,100)
                         geneToMutate = random.randint(1,99)
                 
-                        color = []   
+                        color = []  
                         ran = random.randint(1,99)
                         if ran <= 33:
-                            color.append(rat1[1][1][0])
-                            color.append(rat2[1][1][1])
-                            color.append(rat2[1][1][2])
+                            for c in range(len(rat1)):
+                                color.append(rat1[c][1][0])
+                                color.append(rat2[c][1][1])
+                                color.append(rat2[c][1][2])
                             
                         elif ran > 33 and ran <= 66:
-                            color.append(rat1[1][1][1])
-                            color.append(rat2[1][1][0])
-                            color.append(rat2[1][1][2])
+                            for c in range(len(rat1)):
+                                color.append(rat1[c][1][1])
+                                color.append(rat2[c][1][0])
+                                color.append(rat2[c][1][2])
 
                         else:
-                            color.append(rat1[1][1][2])
-                            color.append(rat2[1][1][0])
-                            color.append(rat2[1][1][1])          
+                            for c in range(len(rat1)):
+                                color.append(rat1[c][1][2])
+                                color.append(rat2[c][1][0])
+                                color.append(rat2[c][1][1])        
                                     
                         if mutateChance <= 30:
                                 if geneToMutate <= 33:
@@ -135,19 +145,32 @@ def crossover():
                                 elif geneToMutate > 33 and geneToMutate <= 66:
                                     color[1] = mutate()
                                 else:
-                                    color[2] = mutate() 
-                                    
-                              
-                        colorRat(color, rat[i + 10 + j], x, y)
+                                    color[2] = mutate()             
+                        if(j == 0):
+                            colorRat(color, childRats[i], x, y)
+                        else:
+                            colorRat(color, childRats[i + len(fittestRats) // 2], x, y)
     
+    return
+
+def chooseRats():
+    #choose the rats to survive
+    tempRats = []
+    for i in range(len(rat)):
+        tempRats.append(rat[i])
+    rat.clear()
+    for i in range(mostFit):
+        rat.append(fittestRats[i])
+    for i in range(mostFit):
+        rat.append(childRats[i])
     return
 
 def select(fitness, rat):
     #select the best color for the rat
-    if(fitness < 0.5):
+    if(fitness < 0.1):
         pasteImg(rat)
         showImg()
-    return
+        quit()
 
 def pasteImg(img):
     # Pasting img image on top of imgBack  
@@ -158,7 +181,21 @@ def pasteImg(img):
 def showImg():
     imgBack.save(r"AI Project\bestRat.jpg")
     imgBack.show()
-    quit()
+
+def rateRat(rat):
+    #rate the rat
+    pasteImg(rat)
+    showImg()
+    rating = input("Please rate the rat's camo from 1-10: ")
+    return rating
+
+def addRating(rating):
+    #add the rating to the rats fitness
+    fittestRatsFitness[0] -= int(rating) / 10
+    for x in range(len(fittestRatsFitness) - 1):
+        fittestRatsFitness[x + 1] -= (int(rating) / 2) / 10
+    return
+
 #get colors of background image
 colors = getPalette(imgBack)
 #initialize the 1st generation of rats
@@ -175,7 +212,7 @@ for i in range(population):
 
 #start the genetic algorithm
 x = 0
-while True:
+for i in range(100):
     
     print("Generation: #" + str(x))
     for i in range(population):  
@@ -188,12 +225,22 @@ while True:
     df.to_csv('GFG.csv', mode='a', index=False, header=False)
     
     getMostFit() 
-  
+    #rating = rateRat(fittestRats[0])
+    #addRating(rating)
+    getMostFit() 
     fitnessArray.clear()
+    if highestFitness > fittestRatsFitness[0]:
+        highestFitness = fittestRatsFitness[0]
+        fittestRat = fittestRats[0]
+    print(highestFitness)
+    select(highestFitness, fittestRats[0]) 
     crossover() 
-    highestFitness = fittestRatsFitness[0]
-    select(highestFitness, fittestRats[0])  
+    chooseRats() 
     x += 1
+
+#show the best rat
+pasteImg(fittestRat)
+showImg()
     
     
             
