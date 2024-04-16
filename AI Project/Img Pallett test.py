@@ -5,8 +5,7 @@ import cv2
 import numpy as np
 import colour
 import pandas as pd
-import csv
-  
+ 
 # Opening the primary image (used in background) 
 imgBack = Image.open(r"AI Project\DistantMountains.jpg") 
 
