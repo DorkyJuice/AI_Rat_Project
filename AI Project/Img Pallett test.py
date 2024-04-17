@@ -14,6 +14,7 @@ imgBackcrop = imgBack.crop((0, 1000, 164, 1062))
 rat = []
 childRats = []
 fitnessArray = []
+colorFitnessArray = []
 fittestRats = []
 fittestRatsFitness = []
 population = 100
@@ -39,7 +40,7 @@ def getPalette(img):
     return color_count
 
 def newColor(color_count):
-    new_color = color_count[random.randint(0, len(color_count)-1)][1]
+    new_color = color_count[random.randint(0, len(color_count)-50)][1]
     return new_color
 
 #replaces the color of the rat with the colors of the background randomly at generation 1
@@ -60,13 +61,57 @@ def calcFitness(img):
 #     #convert the RGB values to lab
      image1_lab = cv2.cvtColor(image1_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
      image2_lab = cv2.cvtColor(image2_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
+     image1_lab = image1_lab.tolist()
+     image2_lab = image2_lab.tolist()
 #     #get the difference of the lab values between the 2 images
      delta_E = colour.delta_E(image1_lab, image2_lab)
 #     #get the mean of the difference
-     median = float(np.mean(delta_E))
+     #print(image2_lab[55])
+     mean = float(np.mean(delta_E))
+     #for i in range(len(image2_lab)):
+     #    for j in range(len(image2_lab[i])):
+      #      if image2_lab[i][j] == [0,0,0]:
+      #          image2_lab[i][j].remove([0,0,0])
+       #     if image2_lab[i][j] == [0,0,0]:
+       #         image2_lab[i][j].remove([0,0,0])
+     meanA = float(np.mean(image2_lab[1]))
+     meanB = float(np.mean(image2_lab[2]))
      #calculate fitness value of color difference
      #fitness = 100 * (mean**2 - mean)**2 + (1 - mean)**2
-     fitness = median / 100
+     #print(meanA)
+     #print(meanB)
+     fitness = (mean / 100) + meanB - meanA
+
+     #print(fitness)
+     
+     return fitness
+
+#finds the difference in color between the rat and the background and uses that as the fitness value  
+def calcColorFitness(color):
+     
+#     #save the crop and recolored rat
+     imgBackcrop.save(r"AI Project\Temp\crop.png")
+#     #open them in cv2 (might change this down the line if it takes to long)
+     image1_rgb = cv2.imread(r"AI Project\Temp\crop.png")
+#     #convert the RGB values to lab
+     image1_lab = cv2.cvtColor(image1_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
+     image1_lab = image1_lab.tolist()
+#     #get the difference of the lab values between the 2 images
+     delta_E = colour.delta_E(image1_lab, color)
+#     #get the mean of the difference
+     #print(image2_lab[55])
+     mean = float(np.mean(delta_E))
+     #for i in range(len(image2_lab)):
+     #    for j in range(len(image2_lab[i])):
+      #      if image2_lab[i][j] == [0,0,0]:
+      #          image2_lab[i][j].remove([0,0,0])
+       #     if image2_lab[i][j] == [0,0,0]:
+       #         image2_lab[i][j].remove([0,0,0])
+     #calculate fitness value of color difference
+     #fitness = 100 * (mean**2 - mean)**2 + (1 - mean)**2
+     #print(meanA)
+     #print(meanB)
+     colorFitnessArray.append(mean / 100)
 
      #print(fitness)
      
@@ -96,6 +141,29 @@ def getMostFit():
         tempFitness.pop(tempBestIndex)
         tempBest = tempFitness[0]
         tempBestIndex = 0
+
+#finds the most fit rat in the population
+def getColorMostFit(colors, cFitness):
+    tempRatColor = []
+    tempRatColorFitness = []
+    for i in range(len(colors)):
+        tempRatColor.append(colors[i])
+    for i in range(len(cFitness)):
+        tempRatColorFitness.append(cFitness[i])
+    tempBest = cFitness[0]
+    tempBestIndex = 0
+    for x in range(len(cFitness)):
+        for y in range(len(tempRatColorFitness)):
+            if(tempBest > tempRatColorFitness[y]):
+                tempBest = tempRatColorFitness[y]
+                tempBestIndex = y
+            
+        fittestRats.append(colors[tempBestIndex])
+        fittestRatsFitness.append(tempRatColorFitness[tempBestIndex])
+        tempRatColor.pop(tempBestIndex)
+        tempRatColorFitness.pop(tempBestIndex)
+        tempBest = tempRatColorFitness[0]
+        tempBestIndex = 0
         
 
 def mutate():
@@ -108,6 +176,14 @@ def crossover():
         for i in range(len(fittestRats) - len(fittestRats) // 2):   
             rat1 = getPalette(fittestRats[i])
             rat2 = getPalette(fittestRats[i + len(fittestRats) // 2])
+            print(rat1)
+            print(rat2)
+            rat1Fit = calcColorFitness(rat1)
+            rat2Fit = calcColorFitness(rat2)
+            getColorMostFit(rat1, rat1Fit)
+            getColorMostFit(rat2, rat2Fit)
+            print(rat1)
+            print(rat2)
         
             childRats.append(Image.open(r"AI Project/Rat.png"))
             
@@ -225,7 +301,7 @@ for i in range(population):
 
 #start the genetic algorithm
 x = 0
-for i in range(100):
+for i in range(5):
     
     print("Generation: #" + str(x))
     for i in range(population):  
@@ -240,7 +316,7 @@ for i in range(100):
     getMostFit() 
     #rating = rateRat(fittestRats[0])
     #addRating(rating)
-    getMostFit() 
+    #getMostFit() 
     fitnessArray.clear()
     if highestFitness > fittestRatsFitness[0]:
         highestFitness = fittestRatsFitness[0]
