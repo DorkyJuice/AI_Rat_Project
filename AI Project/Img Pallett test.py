@@ -63,10 +63,10 @@ def calcFitness(img):
 #     #get the difference of the lab values between the 2 images
      delta_E = colour.delta_E(image1_lab, image2_lab)
 #     #get the mean of the difference
-     mean = float(np.mean(delta_E))
+     median = float(np.mean(delta_E))
      #calculate fitness value of color difference
      #fitness = 100 * (mean**2 - mean)**2 + (1 - mean)**2
-     fitness = mean / 100
+     fitness = median / 100
 
      #print(fitness)
      
@@ -114,43 +114,54 @@ def crossover():
             # Get the size of the image
             width = int(childRats[i].width)
             height = int(childRats[i].height)
-            #Process every pixel
+            c = 0
+                #Process every pixel
             for x in range(width):
                 for y in range(height):
                     current_color = rat[i].getpixel( (x,y) )
                     if current_color != (0, 0, 0, 0):
-                        mutateChance = random.randint(1,100)
-                        geneToMutate = random.randint(1,99)
+                        #mutateChance = random.randint(1,100)
+                        #geneToMutate = random.randint(1,99)
                 
-                        color = []  
-                        ran = random.randint(1,99)
-                        if ran <= 33:
-                            color.append(rat1[random.randint(1, len(rat1) - 1)][1][0])
-                            color.append(rat2[random.randint(1, len(rat2) - 1)][1][1])
-                            color.append(rat2[random.randint(1, len(rat2) - 1)][1][2])
+                        #color = []  
+                        #ran = random.randint(1,99)
+                        #if ran <= 33:
+                        #    color.append(rat1[i][1][0])
+                        #    color.append(rat2[random.randint(1, len(rat2) - 1)][1][1])
+                        #    color.append(rat2[random.randint(1, len(rat2) - 1)][1][2])
                         
-                        elif ran > 33 and ran <= 66:
-                            color.append(rat1[random.randint(1, len(rat1) - 1)][1][1])
-                            color.append(rat2[random.randint(1, len(rat2) - 1)][1][0])
-                            color.append(rat2[random.randint(1, len(rat2) - 1)][1][2])
+                        #elif ran > 33 and ran <= 66:
+                        #    color.append(rat1[random.randint(1, len(rat1) - 1)][1][1])
+                        #    color.append(rat2[random.randint(1, len(rat2) - 1)][1][0])
+                        #    color.append(rat2[random.randint(1, len(rat2) - 1)][1][2])
 
-                        else:
-                            color.append(rat1[random.randint(1, len(rat1) - 1)][1][2])
-                            color.append(rat2[random.randint(1, len(rat2) - 1)][1][0])
-                            color.append(rat2[random.randint(1, len(rat2) - 1)][1][1])      
+                        #else:
+                        #    color.append(rat1[random.randint(1, len(rat1) - 1)][1][2])
+                        #    color.append(rat2[random.randint(1, len(rat2) - 1)][1][0])
+                        #    color.append(rat2[random.randint(1, len(rat2) - 1)][1][1])      
                                 
-                        if mutateChance <= 30:
-                                if geneToMutate <= 33:
-                                    color[0] = mutate()
-                                    
-                                elif geneToMutate > 33 and geneToMutate <= 66:
-                                    color[1] = mutate()
-                                else:
-                                    color[2] = mutate()             
-                        if(j == 0):
-                            colorRat(color, childRats[i], x, y)
+                        #if mutateChance <= 30:
+                        #        if geneToMutate <= 33:
+                        #            color[0] = mutate()
+                        #            
+                        #        elif geneToMutate > 33 and geneToMutate <= 66:
+                        #            color[1] = mutate()
+                        #        else:
+                        # 
+                        #            color[2] = mutate()    
+                        if c >= len(rat1) or c >= len(rat2):
+                            c = 0
+                        if j == 0:
+                            if c % 2 == 1:
+                                colorRat(rat1[random.randint(0, len(rat1) - 1)][1], childRats[i], x, y)
+                            else:
+                                colorRat(rat2[random.randint(0, len(rat2) - 1)][1], childRats[i], x, y)
                         else:
-                            colorRat(color, childRats[i + len(fittestRats) // 2], x, y)
+                            if c % 2 == 1:
+                                colorRat(rat1[random.randint(0, len(rat1) - 1)][1], childRats[i + len(fittestRats) // 2], x, y)
+                            else:
+                                colorRat(rat2[random.randint(0, len(rat2) - 1)][1], childRats[i + len(fittestRats) // 2], x, y)
+                        c += 1
                         
     
     return
@@ -227,8 +238,8 @@ for i in range(100):
     df.to_csv('GFG.csv', mode='a', index=False, header=False)
     
     getMostFit() 
-    rating = rateRat(fittestRats[0])
-    addRating(rating)
+    #rating = rateRat(fittestRats[0])
+    #addRating(rating)
     getMostFit() 
     fitnessArray.clear()
     if highestFitness > fittestRatsFitness[0]:
