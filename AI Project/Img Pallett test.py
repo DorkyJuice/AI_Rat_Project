@@ -73,8 +73,8 @@ def calcFitness(img):
       #          image2_lab[i][j].remove([0,0,0])
        #     if image2_lab[i][j] == [0,0,0]:
        #         image2_lab[i][j].remove([0,0,0])
-     #meanA = float(np.mean(image2_lab[1]))
-     #meanB = float(np.mean(image2_lab[2]))
+     meanA = float(np.mean(image2_lab[1]))
+     meanB = float(np.mean(image2_lab[2]))
      #calculate fitness value of color difference
      #fitness = 100 * (mean**2 - mean)**2 + (1 - mean)**2
      #print(meanA)
@@ -114,7 +114,7 @@ def calcColorFitness(color):
     #print(meanA)
     #print(meanB)
     
-    colorFitnessArray = (mean / 100) + color[2] - color[1]
+    colorFitnessArray = (mean / 100) + color[2] - color[1] - color[0]
 
     #print(fitness)
      
@@ -147,7 +147,7 @@ def getMostFit():
 
 #finds the most fit rat in the population
 def getColorMostFit(colors, cFitness):
-    mostFitColors = (len(colors) // 3) * 2
+    mostFitColors = len(colors) // 3
     tempRatColor = []
     tempRatColorFitness = []
     for i in range(len(colors)):
@@ -250,23 +250,23 @@ def crossover():
                                 if mutateChance <= 30:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i], x, y)
                                 else:
-                                    colorRat(rat1[random.randint(0, (len(rat1)) - 1)][1], childRats[i], x, y)
+                                    colorRat(rat1[random.randint(0, (len(rat1)) - 1 - c)][1], childRats[i], x, y)
                             else:
                                 if mutateChance <= 30:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i], x, y)
                                 else:
-                                    colorRat(rat2[random.randint(0, (len(rat2)) - 1)][1], childRats[i], x, y)
+                                    colorRat(rat2[random.randint(0, (len(rat2)) - 1 - c)][1], childRats[i], x, y)
                         else:
                             if c % 2 == 1:
                                 if mutateChance <= 30:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i + len(fittestRats) // 2], x, y)
                                 else:
-                                    colorRat(rat1[random.randint(0, (len(rat1)) - 1)][1], childRats[i + len(fittestRats) // 2], x, y)
+                                    colorRat(rat1[random.randint(0, (len(rat1)) - 1 - c)][1], childRats[i + len(fittestRats) // 2], x, y)
                             else:
                                 if mutateChance <= 30:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i + len(fittestRats) // 2], x, y)
                                 else:
-                                    colorRat(rat2[random.randint(0, (len(rat2)) - 1)][1], childRats[i + len(fittestRats) // 2], x, y)
+                                    colorRat(rat2[random.randint(0, (len(rat2)) - 1 - c)][1], childRats[i + len(fittestRats) // 2], x, y)
                         c += 1
                         
     
