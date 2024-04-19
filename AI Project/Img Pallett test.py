@@ -18,6 +18,9 @@ fittestRats = []
 fittestRatsFitness = []
 population = 100
 mostFit = population // 2
+moreMutation = False
+whenMoreMutation = 0
+whenLessMutation = 5
 
 for x in range(population):
     # Opening the secondary image (overlay image) 
@@ -53,10 +56,10 @@ def colorRat(new_color, img, x, y):
 def calcFitness(img):
      
 #     #save the crop and recolored rat
-     imgBackcrop.save(r"AI Project\Temp\crop.png")
+     imgBackcrop.save(r"AI Project\Temp\crop.jpg")
      img.save(r"AI Project\Temp\coloredRat.png")
 #     #open them in cv2 (might change this down the line if it takes to long)
-     image1_rgb = cv2.imread(r"AI Project\Temp\crop.png")
+     image1_rgb = cv2.imread(r"AI Project\Temp\crop.jpg")
      image2_rgb = cv2.imread(r"AI Project\Temp\coloredRat.png")
 #     #convert the RGB values to lab
      image1_lab = cv2.cvtColor(image1_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
@@ -91,9 +94,9 @@ def calcColorFitness(color):
     colorFitnessArray = 0
         
 #     #save the crop and recolored rat
-    imgBackcrop.save(r"AI Project\Temp\crop.png")
+    imgBackcrop.save(r"AI Project\Temp\crop.jpg")
 #     #open them in cv2 (might change this down the line if it takes to long)
-    image1_rgb = cv2.imread(r"AI Project\Temp\crop.png")
+    image1_rgb = cv2.imread(r"AI Project\Temp\crop.jpg")
     color_rgb = np.array([[color]])
 #     #convert the RGB values to lab
     image1_lab = cv2.cvtColor(image1_rgb.astype(np.float32) / 255, cv2.COLOR_RGB2Lab)
@@ -115,7 +118,7 @@ def calcColorFitness(color):
     #print(meanA)
     #print(meanB)
     
-    colorFitnessArray = (mean / 100) + color[2] - color[1] + color[0]
+    colorFitnessArray = (mean / 100) + color[2] - (color[0] * 2) + (color[1] // 2)
 
     #print(fitness)
      
@@ -148,7 +151,10 @@ def getMostFit():
 
 #finds the most fit rat in the population
 def getColorMostFit(colors, cFitness):
-    mostFitColors = len(colors)
+    if moreMutation == True:
+        mostFitColors = (len(colors) // 3) * 2
+    else:
+        mostFitColors = len(colors) // 2
     tempRatColor = []
     tempRatColorFitness = []
     for i in range(len(colors)):
@@ -193,7 +199,7 @@ def crossover():
                 if(rat1[p][1] != [0,0,0]):
                     rat1Fit.append(calcColorFitness(rat1[p][1]))
                 else:
-                    rat1Fit.append(200)
+                    rat1Fit.append(1000)
                 
             for p in range(len(rat2)):    
                 if(rat2[p][1] != [0,0,0]):
@@ -214,7 +220,11 @@ def crossover():
                 for y in range(height):
                     current_color = rat[i].getpixel( (x,y) )
                     if current_color != (0, 0, 0, 0):
-                        mutateChance = random.randint(1,1000)
+                        if moreMutation == True:
+                            mutateChance = random.randint(1,100)
+                        else:
+                            mutateChance = random.randint(1,1000)
+                        
                         #geneToMutate = random.randint(1,99)
                 
                         #color = []  
@@ -244,6 +254,8 @@ def crossover():
                         # 
                         #            color[2] = mutate()    
                         if c > len(rat1) - 1 or c > len(rat2) - 1:
+                            c = 0
+                        if(len(rat1) <= 1 or len(rat2) <= 1):
                             c = 0
                         if j == 0:
                             if c % 2 == 1:
@@ -351,8 +363,19 @@ for i in range(100):
     if highestFitness > fittestRatsFitness[0]:
         highestFitness = fittestRatsFitness[0]
         fittestRat = fittestRats[0]
+        moreMutation = False
+        whenMoreMutation = 0
         pasteImg(fittestRat)
         showImg()
+    else:
+        whenMoreMutation += 1
+        if whenMoreMutation <= 5:
+            moreMutation = False
+        if whenMoreMutation > 5:
+            moreMutation = True
+            if whenMoreMutation == 10:
+                whenMoreMutation = 0
+
 
     print(highestFitness)
     select(highestFitness, fittestRats[0]) 
