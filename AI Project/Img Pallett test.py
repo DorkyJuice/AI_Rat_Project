@@ -118,7 +118,7 @@ def calcColorFitness(color):
     #print(meanA)
     #print(meanB)
     
-    colorFitnessArray = (mean / 100) + color[2] - (color[0] * 2)# + (color[1] // 2)
+    colorFitnessArray = (mean / 100) + color[2] - color[0]# + (color[1] // 2)
 
     #print(fitness)
      
