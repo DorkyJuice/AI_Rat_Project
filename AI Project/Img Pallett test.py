@@ -27,6 +27,7 @@ highestFitness = 1
 fittestRat = Image.open(r"AI Project/Rat.png")
 #gets pallet of background image
 def getPalette(img):
+    color_count = []
     reduced = img.convert("P", palette=Image.Palette.WEB) # convert to web palette (216 colors)
     palette = reduced.getpalette() # get palette as [r,g,b,r,g,b,...]
     palette = [palette[3*n:3*n+3] for n in range(256)] # group 3 by 3 = [[r,g,b],[r,g,b],...]
@@ -114,7 +115,7 @@ def calcColorFitness(color):
     #print(meanA)
     #print(meanB)
     
-    colorFitnessArray = (mean / 100) + color[2] - color[1]
+    colorFitnessArray = (mean / 100) + color[2] - color[1] + color[0]
 
     #print(fitness)
      
@@ -147,7 +148,7 @@ def getMostFit():
 
 #finds the most fit rat in the population
 def getColorMostFit(colors, cFitness):
-    mostFitColors = len(colors) // 3
+    mostFitColors = len(colors)
     tempRatColor = []
     tempRatColorFitness = []
     for i in range(len(colors)):
@@ -201,7 +202,6 @@ def crossover():
                     rat2Fit.append(200)
             rat1 =  getColorMostFit(rat1, rat1Fit)
             rat2 = getColorMostFit(rat2, rat2Fit)
-                #print(rat2)
             
             childRats.append(Image.open(r"AI Project/Rat.png"))
             
@@ -214,7 +214,7 @@ def crossover():
                 for y in range(height):
                     current_color = rat[i].getpixel( (x,y) )
                     if current_color != (0, 0, 0, 0):
-                        mutateChance = random.randint(1,100)
+                        mutateChance = random.randint(1,1000)
                         #geneToMutate = random.randint(1,99)
                 
                         #color = []  
@@ -243,27 +243,27 @@ def crossover():
                         #        else:
                         # 
                         #            color[2] = mutate()    
-                        if c >= len(rat1) or c >= len(rat2):
+                        if c > len(rat1) - 1 or c > len(rat2) - 1:
                             c = 0
                         if j == 0:
                             if c % 2 == 1:
-                                if mutateChance <= 30:
+                                if mutateChance <= 1:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i], x, y)
                                 else:
                                     colorRat(rat1[random.randint(0, (len(rat1)) - 1 - c)][1], childRats[i], x, y)
                             else:
-                                if mutateChance <= 30:
+                                if mutateChance <= 1:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i], x, y)
                                 else:
                                     colorRat(rat2[random.randint(0, (len(rat2)) - 1 - c)][1], childRats[i], x, y)
                         else:
                             if c % 2 == 1:
-                                if mutateChance <= 30:
+                                if mutateChance <= 1:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i + len(fittestRats) // 2], x, y)
                                 else:
                                     colorRat(rat1[random.randint(0, (len(rat1)) - 1 - c)][1], childRats[i + len(fittestRats) // 2], x, y)
                             else:
-                                if mutateChance <= 30:
+                                if mutateChance <= 1:
                                     colorRat([mutate(), mutate(), mutate()], childRats[i + len(fittestRats) // 2], x, y)
                                 else:
                                     colorRat(rat2[random.randint(0, (len(rat2)) - 1 - c)][1], childRats[i + len(fittestRats) // 2], x, y)
@@ -351,10 +351,15 @@ for i in range(100):
     if highestFitness > fittestRatsFitness[0]:
         highestFitness = fittestRatsFitness[0]
         fittestRat = fittestRats[0]
+        pasteImg(fittestRat)
+        showImg()
+
     print(highestFitness)
     select(highestFitness, fittestRats[0]) 
     crossover() 
     chooseRats() 
+    fittestRats.clear()
+    fittestRatsFitness.clear()
     x += 1
 
 #show the best rat
